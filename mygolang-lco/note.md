@@ -228,3 +228,253 @@ golang의 자료형입니다. 대료형은 대소문자를 구분합니다. 또 
 golang은 변수를 사전에 정의해야 합니다. 대부분의 golang에서 보게 되는 대부분의 것들은 타입입니다.
 
 함수자체도 자료형으로 지원해서 함수형 프로그래밍을 지원하게 만들 수 있습니다.
+
+# Variables, types and constants
+
+https://www.youtube.com/watch?v=9fYqg6uo-UU
+
+```sh
+go mod init varriable
+```
+
+이렇게 초기설정하는 것을 항상 잊지말도록 합니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("Variables")
+}
+```
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	var username string = "Jake The dog"
+	fmt.Println(username)
+}
+```
+
+변수 선언입니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	var username string = "Jake The dog"
+	fmt.Println(username)
+	fmt.Printf("Variable is of type: %T \n", username)
+}
+```
+
+> Jake The dog
+> Variable is of type: string
+
+이렇게 피드백을 줍니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	var smallVal uint8 = 255
+	fmt.Println(smallVal)
+	fmt.Printf("Variable is of type: %T \n", smallVal)
+}
+```
+
+uint8은 256을 초과할 수 없습니다. 0부터 시작합니다. 하지만 필요할 때는 int만 지정해주면 됩니다.
+
+대부분의 경우 int를 먼저 사용하지만 운영체제 관련된 프로그래밍할 때는 unit을 사용하게 될 것입니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	var smallFloat float32 = 255.134314232132435
+	fmt.Println(smallFloat)
+	fmt.Printf("Variable is of type: %T \n", smallFloat)
+}
+```
+
+`float`는 클수록 정확성이 증가합니다.
+
+타입별칭들입니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+
+	// 기본값과 별칭들입니다.
+	var anotherVariable int
+	fmt.Println(anotherVariable)
+	fmt.Printf("Variable is of type: %T \n", anotherVariable)
+}
+```
+
+이렇게 작성하면 기본적으로 0이 할당됩니다. 문자열을 할당하면 비어있는 문자열이 할당됩니다.
+
+타입추론이 가능합니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	// 타입 암시
+	var website = "google.com"
+	fmt.Println(website)
+}
+```
+
+no var 스타일이 있습니다. 다른 말로 바다사자 연산자라고 부릅니다.
+
+```go
+package main
+
+import "fmt"
+
+// 이것은 허용되지 않습니다.
+jwtToken := 3000_000
+
+func main() {
+	// 바다사자 연산자
+	numberUser := 300_000
+	fmt.Println(numberUser)
+}
+```
+
+바다사자 연산자는 글로벌스코프로 정의할 수 없습니다.
+
+```go
+const LoginToken string = "qerwerqw"
+
+```
+
+```go
+package main
+
+import "fmt"
+
+const LoginToken string = "qerwerqw"
+
+func main() {
+	fmt.Println(LoginToken)
+	fmt.Printf("Variable is of type: %T \n", LoginToken)
+}
+```
+
+이렇게 작성하면 다른언어의 public 키워드를 붙인 것과 동일합니다. 대문자로 시작하면 이렇게 동작합니다.
+
+# Comma ok syntax and packages in golang
+
+https://www.youtube.com/watch?v=zYIZtbyUIDY
+
+사용자에게 input을 받는법입니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	welcome := "Welcome to user input"
+	fmt.Println(welcome)
+}
+```
+
+이렇게 시작합니다.
+
+사용자에게 자료입력을 받습니다.
+
+이제 익숙해질 문법입니다.
+
+https://pkg.go.dev/
+
+여기서는 golang의 패키지를 검색할 수 있습니다.
+
+buffer는 자료를 저장하고 읽고 쓸 수 있습니다.
+
+패키지는 중요한 것은 검색 능력입니다. 무엇이 존재하고 어떻게 사용하는지 자주 사용하는 것은 외우고 유용한 것은 메모만 합니다.
+
+바다사자 연산자는 무엇이 들어올지 모를 때 많이 사용합니다.
+
+```go
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+)
+
+func main() {
+	welcome := "Welcome to user input"
+	fmt.Println(welcome)
+
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("Enter the rating for our Pizza:")
+
+	// comma ok 문법입니다. err ok 문법이라고 합니다.
+	// golang은 try catch가 없습니다. 에러를 부울처럼 취급하기 바라면서 설계했습니다.
+
+	input, _ := reader.ReadString('\n')
+	fmt.Println("Thanks for rating, ", input)
+
+}
+```
+
+golang에서 주의할 점이 있습니다. 문자열을 표시할 때 따옴표, 쌍따옴표 다릅니다.
+
+`reader.ReadString('\n')`은 따옴표 문자열을 대입했습니다.
+
+err, ok 혹은 comma, ok 문법입니다. golang을 다루면서 자주 보게될 문법입니다.
+
+err를 만약에 사용하지않으면 언더스코어(`_`)로 작성합니다. err는 에러 핸들링할 때 사용합니다.
+
+이상해보이지만 상당히 큰 장점으로 작용합니다.
+
+```go
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+)
+
+func main() {
+	welcome := "Welcome to user input"
+	fmt.Println(welcome)
+
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("Enter the rating for our Pizza:")
+
+	// comma ok 문법입니다. err ok 문법이라고 합니다.
+	// golang은 try catch가 없습니다. 에러를 부울처럼 취급하기 바라면서 설계했습니다.
+
+	input, _ := reader.ReadString('\n')
+	fmt.Println("Thanks for rating, ", input)
+	fmt.Printf("Type of this is %T", input)
+}
+```
+
+이렇게 피드백을 받으면 당연히 예상한 것처럼 문자열 자료형입니다.
+
+#
+
+https://www.youtube.com/watch?v=3j43y-PFJPI
