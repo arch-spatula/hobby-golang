@@ -1450,3 +1450,742 @@ func main() {
 ```
 
 다른 언어를 공부해봤으면 상당히 간편합니다.
+
+# Switch case in golang and online playground
+
+https://www.youtube.com/watch?v=Up4lTPhJBvs
+
+golang의 Switch case 문입니다.
+
+lugo game을 만들어봅니다.
+
+```go
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func main() {
+	fmt.Println("Switch and case in golang")
+
+	// 시드 생성
+	rand.Seed(time.Now().UnixNano())
+	diceNumber := rand.Intn(6) + 1
+	fmt.Println("Value of dice: ", diceNumber)
+}
+
+```
+
+주사위 기능을 구현했습니다.
+
+```go
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func main() {
+	fmt.Println("Switch and case in golang")
+
+	// 시드 생성
+	rand.Seed(time.Now().UnixNano())
+	diceNumber := rand.Intn(6) + 1
+	fmt.Println("Value of dice: ", diceNumber)
+
+	switch diceNumber {
+	case 1:
+		fmt.Println("Dice value is 1 you can open")
+	case 2:
+		fmt.Println("You can move 2")
+	case 3:
+		fmt.Println("You can move 3")
+	case 4:
+		fmt.Println("You can move 4")
+	case 5:
+		fmt.Println("You can move 5")
+	case 6:
+		fmt.Println("You can move 6")
+	default:
+		fmt.Println("What was that?")
+	}
+}
+```
+
+fallthrough도 만들 수 있습니다. 특정 케이스를 달성하면 그이후도 모두 실행하도록 할 수 있습니다.
+
+```go
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func main() {
+	fmt.Println("Switch and case in golang")
+
+	// 시드 생성
+	rand.Seed(time.Now().UnixNano())
+	diceNumber := rand.Intn(6) + 1
+	fmt.Println("Value of dice: ", diceNumber)
+
+	switch diceNumber {
+	case 1:
+		fmt.Println("Dice value is 1 you can open")
+	case 2:
+		fmt.Println("You can move 2")
+	case 3:
+		fmt.Println("You can move 3")
+		fallthrough
+	case 4:
+		fmt.Println("You can move 4")
+		fallthrough
+	case 5:
+		fmt.Println("You can move 5")
+	case 6:
+		fmt.Println("You can move 6")
+	default:
+		fmt.Println("What was that?")
+	}
+}
+```
+
+> Switch and case in golang
+> Value of dice: 3
+> You can move 3
+> You can move 4
+> You can move 5
+
+# Loop break continue and goto in golang
+
+https://www.youtube.com/watch?v=ZWBA3l818y0
+
+이번에는 반복문을 만듭니다. golang의 반복문은 흥미롭습니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("golang의 반복문")
+
+	days := []string{"일요일", "화요일", "수요일", "금요일", "토요일"}
+
+	fmt.Println(days)
+
+	for i := 0; i < len(days); i++ {
+		fmt.Println(days[i])
+	}
+}
+```
+
+이렇게 반복문을 만들 수 있습니다. 가장 기본적인 형태의 순회방법입니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("golang의 반복문")
+
+	days := []string{"일요일", "화요일", "수요일", "금요일", "토요일"}
+
+	fmt.Println(days)
+
+	for i := range days {
+		fmt.Println(days[i])
+	}
+}
+```
+
+여기서 i는 인덱스를 접근합니다. 조금더 자주 활용합니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("golang의 반복문")
+
+	days := []string{"일요일", "화요일", "수요일", "금요일", "토요일"}
+
+	fmt.Println(days)
+
+	for index, value := range days {
+		fmt.Printf("index is %v and value is %v\n", index, value)
+	}
+}
+```
+
+comma ok 표기법처럼 응용도 가능합니다. 인덱스와 값 모두 얻을 수 있습니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("golang의 반복문")
+
+	days := []string{"일요일", "화요일", "수요일", "금요일", "토요일"}
+
+	fmt.Println(days)
+
+	rougeValue := 1
+
+	for rougeValue < 10 {
+		fmt.Println("값: ", rougeValue)
+		rougeValue++
+	}
+}
+```
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("golang의 반복문")
+
+	days := []string{"일요일", "화요일", "수요일", "금요일", "토요일"}
+
+	fmt.Println(days)
+
+	rougeValue := 1
+
+	for rougeValue < 10 {
+
+		// 종료
+		if rougeValue == 5 {
+			break
+		}
+
+		// 하나 건너 뛰기
+		if rougeValue == 3 {
+			rougeValue++
+			continue
+		}
+
+		fmt.Println("값: ", rougeValue)
+		rougeValue++
+	}
+}
+```
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("golang의 반복문")
+
+	days := []string{"일요일", "화요일", "수요일", "금요일", "토요일"}
+
+	fmt.Println(days)
+
+	rougeValue := 1
+
+	for rougeValue < 10 {
+
+		// 종료
+		if rougeValue == 5 {
+			break
+		}
+
+		// 하나 건너 뛰기
+		if rougeValue == 3 {
+			rougeValue++
+			continue
+		}
+
+		if rougeValue == 2 {
+			goto loc
+		}
+
+		fmt.Println("값: ", rougeValue)
+		rougeValue++
+	}
+
+loc:
+	fmt.Println("go to 기능을 구현합니다.")
+}
+```
+
+또 반복문에서도 보는 comma ok 표기법을 주의하도록 합니다.
+
+# Functions in golang
+
+https://www.youtube.com/watch?v=rcUST3QvVOQ
+
+함수는 당연히 존재합니다. 언어별로 대부분의 경우 함수는 존재할 수 밖에 없습니다. golang은 처음 사용할 때부터 사용합니다.
+
+func까지 작성하자마자 함수를 작성할 수 있게 해줍니다. 함수 이름은 다른 것도 당연히 작성할 수 있습니다.
+
+```go
+package main
+
+func main() {
+
+}
+```
+
+이것이 함수입니다. 매개변수도 다룰 것입니다. 함수를 정의만 해주면 됩니다. 프로그래밍을 실행할 때 정의한 함수를 실행해줍니다. 별도의 호출이 필요없습니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("여기서는 함수를 다룹니다.")
+	greeter()
+}
+
+func greeter() {
+	fmt.Println("안녕하세요")
+}
+```
+
+이렇게 함수를 main에 호출해야 실행이 가능합니다. 커맨드라인은 main을 호출하고 main은 greeter를 호출합니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("여기서는 함수를 다룹니다.")
+	greeter()
+
+	// 에러를 돌려줍니다.
+	func greeterTwo()  {
+		fmt.Println("함수속 에 함수 정의는 허용되지 않습니다.")
+	}
+}
+
+func greeter() {
+	fmt.Println("안녕하세요")
+}
+```
+
+즉시 실행함수, 익명함수도 존재하지만 안다루도록 합니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("여기서는 함수를 다룹니다.")
+
+	result := adder(3, 5)
+
+	fmt.Println("간단한 결과", result)
+}
+
+func adder(valOne int, valTwo int) int {
+	return valOne + valTwo
+}
+
+```
+
+함수 시그니처가 필요합니다. 인자의 타입과 반환값의 타입을 모두 지정해줘야 합니다.
+
+받을 인자의 개수를 모를 때 활용할 수 있는 문법이 있습니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("여기서는 함수를 다룹니다.")
+
+	proResult := proAdder(1, 2, 3, 4, 5, 6, 7)
+	fmt.Println("간단한 결과", proResult)
+}
+
+
+func proAdder(values ...int) int {
+	total := 0
+	for _, val := range values {
+		total += val
+	}
+	return total
+}
+```
+
+이렇게 작성하면 sum 함수 비슷하게 구현할 수 있습니다.
+
+몇가지 경우는 반환값이 여러가지인 경우도 존재할 수 있습니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("여기서는 함수를 다룹니다.")
+
+	proResult, myMessage := proAdder(1, 2, 3, 4, 5, 6, 7)
+	fmt.Println("간단한 결과", proResult, myMessage)
+}
+
+func proAdder(values ...int) (int, string) {
+	total := 0
+	for _, val := range values {
+		total += val
+	}
+	return total, "adfsdsaf"
+}
+```
+
+이렇게 작성하면 여러 개의 반환값을 갖도록 만들 수 있습니다. 그리고 반환값에 대한 할당도 comma ok 표기법으로 대응해줘야 합니다.
+
+람다(익명)함수도 분명 존재하지만 나중에 다룰 것입니다.
+
+# Methods in golang
+
+https://www.youtube.com/watch?v=GhYIKwMxz_Y
+
+golang에 대한 메서드입니다.
+
+golang은 클래스가 존재하지 않아 struct를 활용해서 메서드를 만듭니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("메서드를 다룹니다.")
+	// 상속 부모자식 클래스 개념이 없습니다.
+}
+
+type User struct {
+	Name   string
+	Email  string
+	Status bool
+	Age    int
+	oneAge int
+}
+
+func (u User) GetStatus() {
+
+}
+```
+
+메서드는 이렇게 정의합니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("메서드를 다룹니다.")
+	jake := User{"Jake", "jaketheGod@go.dev", true, 30, 23}
+	jake.GetStatus()
+}
+
+type User struct {
+	Name   string
+	Email  string
+	Status bool
+	Age    int
+	oneAge int // 비공개 속성값은 케멀케이스로 정의합니다.
+}
+
+func (u User) GetStatus() {
+	fmt.Println("Is user active: ", u.Status)
+}
+```
+
+> 메서드를 다룹니다.
+> Is user active: true
+
+이런 피드백을 받습니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("메서드를 다룹니다.")
+	// 상속 부모자식 클래스 개념이 없습니다.
+	jake := User{"Jake", "jaketheGod@go.dev", true, 30, 23}
+	jake.GetStatus()
+	jake.NewMail()
+	fmt.Println(jake)
+}
+
+type User struct {
+	Name   string
+	Email  string
+	Status bool
+	Age    int
+	oneAge int // 비공개 속성값은 케멀케이스로 정의합니다.
+}
+
+func (u User) GetStatus() {
+	fmt.Println("Is user active: ", u.Status)
+}
+
+func (u User) NewMail() {
+	u.Email = "jakethedog@go.dev"
+	fmt.Println("Email: ", u.Email)
+}
+```
+
+메서드의 피드백과 다르게 원본 인스턴스에는 변형이 없습니다.
+
+> Email: jakethedog@go.dev
+> {Jake jaketheGod@go.dev true 30 23}
+
+메서드는 복사되어 할당됩니다. 대부분의 언어는 복사 됩니다. 이런 이유로 포인터를 활용하게 됩니다. 원본 값을 변형하는 예시는 나중에 다룹니다.
+
+# Defer in golang
+
+https://www.youtube.com/watch?v=jiy584-vv38
+
+이번에는 Defer문을 다룹니다. 인터넷에서 혼선이 많이 발생하는 지식입니다. 문서도 혼란스럽습니다.
+
+함수를 실행할 때 줄 순서대로 실행합니다. 하지만 defer를 선언하면 나중에 실행합니다.
+
+LIFO 구조로 실행합니다.
+
+https://go.dev/ref/spec#Defer_statements
+
+공식 문서는 이렇게 설명합니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	defer fmt.Println("World")
+	fmt.Println("hello")
+}
+```
+
+> hello
+> World
+
+World를 나중에 실행합니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	defer fmt.Println("World")
+	defer fmt.Println("One")
+	defer fmt.Println("Two")
+	fmt.Println("hello")
+}
+```
+
+> hello
+> Two
+> One
+> World
+
+LIFO 순서에 맞게 실행됩니다. 이점만 숙지하면 상당히 간단하게 사용할 수 있습니다. golang이 취미인 입장에서는 이정도로 파악하면 됩니다.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	defer fmt.Println("World")
+	defer fmt.Println("One")
+	defer fmt.Println("Two")
+	fmt.Println("hello")
+
+	myDefer()
+}
+
+func myDefer() {
+	for i := 0; i < 5; i++ {
+		defer fmt.Print(i)
+	}
+}
+```
+
+> hello
+> 43210Two
+> One
+> World
+
+이렇게 실행합니다. defer는 함수 속 반복문에 작성되어 있습니다. hello를 출력하고 defer가 없어서 제일 먼저 실행합니다. 다음으로 myDefer를 실행하고 반복문의 역순으로 출력합니다. 그리고 defer를 역순으로 실행합니다.
+
+문서와 자료를 통해 학습하기 보단 직접 코드를 작성해서 이렇게 이해하는 것이 더 직관적입니다.
+
+# Working with files in golang
+
+https://www.youtube.com/watch?v=Mdg3tlGUXrE
+
+다른 언어처럼 golang도 text파일만 처리할 수 있습니다. 다른 언어처럼 다른 형식도 패키지에 의존해야 합니다. IO랑 defer문법만 알면 간단하게 할 수 있습니다.
+
+```go
+package main
+
+import (
+	"fmt"
+	"io"
+	"os"
+)
+
+func main() {
+	fmt.Println("golang으로 파일처리")
+	content := "파일을 읽어볼 것입니다."
+
+	// 파일 생성
+	file, err := os.Create("./mylcogofile.txt")
+	if err != nil {
+		// panic은 프로그램을 강제 중단합니다.
+		panic(err)
+	}
+
+	// 생성한 파일에 글 작성하기
+	length, err := io.WriteString(file, content)
+	if err != nil {
+		// 에러처리는 대부분의 경우 유사합니다.
+		panic(err)
+	}
+
+	fmt.Println("length is: ", length)
+	// 생성한 파일을 닫기합니다.
+	file.Close()
+}
+```
+
+> golang으로 파일처리
+> length is: 33
+
+터미널을 이렇게 피드백을 돌려줍니다.
+
+```txt
+파일을 읽어볼 것입니다.
+```
+
+이렇게 파일이 생성되었습니다.
+
+```go
+package main
+
+import (
+	"fmt"
+	"io"
+	"io/ioutil"
+	"os"
+)
+
+func main() {
+	fmt.Println("golang으로 파일처리")
+	content := "파일을 읽어볼 것입니다."
+
+	// 파일 생성
+	file, err := os.Create("./mylcogofile.txt")
+	if err != nil {
+		// panic은 프로그램을 강제 중단합니다.
+		panic(err)
+	}
+
+	// 생성한 파일에 글 작성하기
+	length, err := io.WriteString(file, content)
+	if err != nil {
+		// 에러처리는 대부분의 경우 유사합니다.
+		panic(err)
+	}
+
+	fmt.Println("length is: ", length)
+	// 생성한 파일을 닫기합니다.
+	defer file.Close()
+	readFile("./mylcogofile.txt")
+}
+
+// 파일 읽기는 생성과 유사합니다.
+
+func readFile(fileName string) {
+	// 파일을 읽을 때는 운영체제 제어보다 더 많은 기능이 필요하고 ioutil이 제공합니다.
+	dataByte, err := ioutil.ReadFile(fileName)
+	// 파일을 읽을 때는 기본적으로 string으로 되어 있지 않습니다. byte로 되어 있습니다.
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("dataByte의 생김새는...", dataByte)
+}
+```
+
+> golang으로 파일처리
+> length is: 33
+> dataByte의 생김새는... [237 140 140 236 157 188 236 157 132 32 236 157 189 236 150 180 235 179 188 32 234 178 131 236 158 133 235 139 136 235 139 164 46]
+
+바이트는 이렇게 생겼습니다.
+
+에러핸들링은 자주하면서 `checkNilErr`같은 함수를 만들 때가 많습니다.
+
+```go
+package main
+
+import (
+	"fmt"
+	"io"
+	"io/ioutil"
+	"os"
+)
+
+func main() {
+	fmt.Println("golang으로 파일처리")
+	content := "파일을 읽어볼 것입니다."
+
+	// 파일 생성
+	file, err := os.Create("./mylcogofile.txt")
+	checkNilErr(err)
+
+	// 생성한 파일에 글 작성하기
+	length, err := io.WriteString(file, content)
+	checkNilErr(err)
+
+	fmt.Println("length is: ", length)
+	// 생성한 파일을 닫기합니다.
+	defer file.Close()
+	readFile("./mylcogofile.txt")
+}
+
+// 파일 읽기는 생성과 유사합니다.
+
+func readFile(fileName string) {
+	dataByte, err := ioutil.ReadFile(fileName)
+	checkNilErr(err)
+
+	fmt.Println("dataByte의 생김새는...", dataByte)
+}
+
+func checkNilErr(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+```
+
+이렇게 작성하면 에러를 간략하게 핸들링할 수 있습니다.
