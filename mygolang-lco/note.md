@@ -2,6 +2,8 @@
 
 https://www.youtube.com/playlist?list=PLRAV69dS1uWQGDQoBYMZWKjzuhCaOnBpa
 
+https://github.com/hiteshchoudhary/golang
+
 # Welcome to series on GO programming language
 
 https://www.youtube.com/watch?v=JoJ8Sw5Yb4c
@@ -2189,3 +2191,689 @@ func checkNilErr(err error) {
 ```
 
 이렇게 작성하면 에러를 간략하게 핸들링할 수 있습니다.
+
+# Handling web request in golang
+
+https://www.youtube.com/watch?v=ru53LpdVHn4
+
+이번장에는 web을 다루기 시작합니다. 재미있는 부분입니다. 지금까지 배운 것을 응용하는 성격이 강합니다.
+
+http 패키지로 웹 요청을 주고 받을 수 있습니다. net/http를 가장 자주 사용하고 가장 빠르게 사용할 수 있는 패키지입니다.
+
+https://pkg.go.dev/net/http
+
+header도 제어하는 것은 당연히 가능합니다.
+
+요청을 보낼 때 response의 타입이 아주 중요합니다. 깊게 공부하려면 필요한 지식입니다.
+
+https://pkg.go.dev/net/http#Request
+
+요청은 종료되면 반드시 닫도록 합니다.
+
+```go
+	// For client requests, setting this field prevents re-use of
+	// TCP connections between requests to the same hosts, as if
+	// Transport.DisableKeepAlives were set.
+	Close bool
+```
+
+이부분을 주의하도록 합니다.
+
+```go
+package main
+
+import (
+	"fmt"
+	"net/http"
+)
+
+const url = "https://lco.dev"
+
+func main() {
+	fmt.Println("LCO web에 요청합니다.")
+	// get 요청을 날립니다.
+	response, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("response 타입: %T\n", response)
+	// 요청이 종료되면 닫도록 합니다.
+	response.Body.Close()
+}
+```
+
+> LCO web에 요청합니다.
+> response 타입: \*http.Response
+
+response의 포인터를 활용합니다.
+
+```go
+package main
+
+import (
+	"fmt"
+	"io/ioutil"
+	"net/http"
+)
+
+const url = "https://lco.dev"
+
+func main() {
+	fmt.Println("LCO web에 요청합니다.")
+	// get 요청을 날립니다.
+	response, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("response 타입: %T\n", response)
+
+	// 요청이 종료되면 닫도록 합니다.
+	defer response.Body.Close()
+
+	dateBytes, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		panic(err)
+	}
+	content := string(dateBytes)
+	fmt.Println(content)
+}
+```
+
+html을 응답으로 받게 됩니다.
+
+이것은 가장 기본적인 웹 요청입니다. 대부분 golang을 활용할 때는 API 핸들링입니다.
+
+# Handling URL in golang
+
+https://www.youtube.com/watch?v=cl7_ouTMFh0
+
+웹을 다룰 때는 URL이 안 다룰 수 없습니다. 지난 시간에는 URL로 요청을 보내는 법을 배웠습니다.
+
+net은 라이브러리를 넘어 모듈에 가깝습니다.
+
+```go
+package main
+
+import "fmt"
+
+// 가짜 url을 만들어봅니다.
+
+const MY_URL string = "https://lco.dev:3000/learn?coursename=reactjs&paymentid:afsdqwerzxv3645"
+
+func main() {
+	fmt.Println("URL 다루기에 환영합니다.")
+	fmt.Println(MY_URL)
+}
+```
+
+여기서 시작합니다. 이제는 파싱합니다. 정보를 처리합니다.
+
+```go
+package main
+
+import (
+	"fmt"
+	"net/url"
+)
+
+// 가짜 url을 만들어봅니다.
+
+const MY_URL string = "https://lco.dev:3000/learn?coursename=reactjs&paymentid:afsdqwerzxv3645"
+
+func main() {
+	fmt.Println("URL 다루기에 환영합니다.")
+	fmt.Println(MY_URL)
+
+	// 파싱 처리
+	result, _ := url.Parse(MY_URL)
+	fmt.Println(result.Scheme)   // https
+	fmt.Println(result.Host)     // lco.dev:3000
+	fmt.Println(result.Path)     // /learn
+	fmt.Println(result.RawQuery) // coursename=reactjs&paymentid:afsdqwerzxv3645
+	fmt.Println(result.Port())   // 3000
+}
+```
+
+각각의 요소를 선택하고 계산에 나중에 응용해 볼 수 있을 것 같습니다.
+
+여기서 변수명으로 저장하려는 본능이 나오겠지만 더 우아한 처리방법이 있습니다.
+
+```go
+package main
+
+import (
+	"fmt"
+	"net/url"
+)
+
+// 가짜 url을 만들어봅니다.
+
+const MY_URL string = "https://lco.dev:3000/learn?coursename=reactjs&paymentid:afsdqwerzxv3645"
+
+func main() {
+	fmt.Println("URL 다루기에 환영합니다.")
+	fmt.Println(MY_URL)
+
+	// 파싱 처리
+	result, _ := url.Parse(MY_URL)
+	fmt.Println(result.Scheme)   // https
+	fmt.Println(result.Host)     // lco.dev:3000
+	fmt.Println(result.Path)     // /learn
+	fmt.Println(result.RawQuery) // coursename=reactjs&paymentid:afsdqwerzxv3645
+	fmt.Println(result.Port())   // 3000
+
+	qparams := result.Query()
+	fmt.Printf("Query Param: %T\n", qparams) // Query Param: url.Values
+
+	fmt.Println(qparams["coursename"]) // [reactjs]
+
+	for _, val := range qparams {
+		fmt.Println("Param is", val)
+	}
+
+	// 포인터를 전달합니다.
+	partsOfUrl := &url.URL{
+		Scheme:  "https",
+		Host:    "lco.dev",
+		Path:    "/tutcss",
+		RawPath: "user=jake",
+	}
+
+	// 문자열로 변환하고 할당합니다.
+	auotherURL := partsOfUrl.String()
+	fmt.Println(auotherURL)
+}
+```
+
+> https://lco.dev/tutcss
+
+이렇게 URL을 수동으로 생성하는 것도 가능합니다.
+
+# Creating server for golang frontend
+
+https://www.youtube.com/watch?v=xh79JXJy0yY
+
+golang으로 요청을 작은 체험만 해봤습니다. golang으로 다양한 라우팅 처리하고 핸들링하는 것을 배워야 합니다.
+
+https://github.com/hiteshchoudhary/golang/tree/main/lcowebserver
+
+여기서 서버를 만들고 임시로 만들 수 있습니다.
+
+```js
+/*
+Part of exercise file for go lang course at
+https://web.learncodeonline.in
+*/
+
+const express = require("express");
+const app = express();
+const port = 8000;
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.get("/", (req, res) => {
+  res.status(200).send("Welcome to LearnCodeonline server");
+});
+
+app.get("/get", (req, res) => {
+  res.status(200).json({ message: "Hello from learnCodeonline.in" });
+});
+
+app.post("/post", (req, res) => {
+  let myJson = req.body; // your JSON
+
+  res.status(200).send(myJson);
+});
+
+app.post("/postform", (req, res) => {
+  res.status(200).send(JSON.stringify(req.body));
+});
+
+app.listen(port, () => {
+  console.log(`Example app listening at http://localhost:${port}`);
+});
+```
+
+이렇게 임시 서버를 만들 수 있습니다.
+
+요청 응답을 처리할 수 있게 golang으로 만들어야 합니다. json데이터를 주고 받게 만드는 것입니다.
+
+요청과 응답을 주고 받게 만드는 것은 직관적으로 할 수 있습니다.
+
+# How to make GET request in golang
+
+https://www.youtube.com/watch?v=V-sxFQ0fWlw
+
+목표는 단순합니다. 자바스크립트 익스레스 서버처럼 만드는 것입니다.
+
+서버의 get요청 처리입니다. post를 json으로 처리하고 또 form을 처리할 것입니다.
+
+문자열 처리를 어렵게 처리하는 방법과 쉬운 방법입니다.
+
+```go
+package main
+
+import (
+	"fmt"
+	"io/ioutil"
+	"net/http"
+)
+
+func main() {
+	fmt.Println("요청처리 1장입니다.")
+
+	PerformGetRequest()
+}
+
+// public 함수로 만듭니다.
+func PerformGetRequest() {
+	const MY_URL = "http://localhost:8000/get"
+
+	response, err := http.Get(MY_URL)
+	if err != nil {
+		panic(err)
+	}
+
+	defer response.Body.Close()
+	fmt.Println("상태 코드: ", response.StatusCode)
+	fmt.Println("콘텐츠 길이: ", response.ContentLength)
+
+	content, _ := ioutil.ReadAll(response.Body)
+
+	fmt.Println(string(content))
+
+}
+```
+
+> 요청처리 1장입니다.
+> 상태 코드: 200
+> 콘텐츠 길이: 43
+> {"message":"Hello from learnCodeonline.in"}
+
+이렇게 응답을 받을 수 있습니다. 데이터의 JSON을 아직 안 다루었습니다. 나중에 다룰 것입니다.
+
+이것을 다른 방식으로 해결하는 것도 가능합니다. 복잡하지만 가치가 있습니다.
+
+문자열을 처리하는 방식입니다.
+
+https://pkg.go.dev/strings#Builder
+
+strings 패키지에서 처리를 도와줄 것입니다.
+
+메서드를 활용해서 제어하게 되는 것입니다. 지금의 방식에는 문제는 없지만 각자 다른 방식으로 작성하면서 문제가 생길 수 있습니다.
+
+```go
+package main
+
+import (
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strings"
+)
+
+func main() {
+	fmt.Println("요청처리 1장입니다.")
+
+	PerformGetRequest()
+}
+
+// public 함수로 만듭니다.
+func PerformGetRequest() {
+	const MY_URL = "http://localhost:8000/get"
+
+	response, err := http.Get(MY_URL)
+	if err != nil {
+		panic(err)
+	}
+
+	defer response.Body.Close()
+	fmt.Println("상태 코드: ", response.StatusCode)
+	fmt.Println("콘텐츠 길이: ", response.ContentLength)
+
+	var responseString strings.Builder
+	content, _ := ioutil.ReadAll(response.Body)
+	byteCount, _ := responseString.Write(content)
+	fmt.Println("byteCount: ", byteCount)
+	fmt.Println("byteCount: ", responseString.String()) // 장점은 원본 데이터를 달고 있습니다.
+
+}
+```
+
+라이브러리 하나만 사용하는 것으로 이렇게 강력하게 사용할 수 있습니다. 초심자들에게는 전자를 권장합니다. 하지만 어느정도 사용해보면 당연히 후자가 더 좋습니다.
+
+# How to make POST request with JSON data in golang
+
+https://www.youtube.com/watch?v=h5NeKZuzUoc
+
+웹서버는 그 라우트의 데이터만 받습니다.
+
+데이터를 서버로 보내야 하는 경우를 처리합니다. 이번에는 JSON을 생성하고 만드는 법을 다룹니다.
+
+```go
+package main
+
+import (
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strings"
+)
+
+func main() {
+	fmt.Println("요청처리 1장입니다.")
+
+	// PerformGetRequest()
+	PerformPostJsonRequest()
+}
+
+func PerformPostJsonRequest() {
+	const MY_URL = "http://localhost:8000/post"
+
+	requestBody := strings.NewReader(`
+		{
+			"courseName": "Let's go with golang",
+			"price": "0",
+			"platform": "learnCodeOnline.in"
+		}
+	`)
+
+	// 두번째 인자 header의 content-type을 주의하도록 합니다.
+	response, err := http.Post(MY_URL, "application/json", requestBody)
+	if err != nil {
+		panic(err)
+	}
+
+	defer response.Body.Close()
+
+	content, _ := ioutil.ReadAll(response.Body)
+
+	fmt.Println(string(content))
+}
+```
+
+주의할 점은 header로 넣게 되는 content-type입니다.
+
+> 요청처리 1장입니다.
+> {"courseName":"Let's go with golang","price":"0","platform":"learnCodeOnline.in"}
+
+post 요청이 처리되었습니다.
+
+# How to send form data in golang
+
+https://www.youtube.com/watch?v=U_LjyX4iDbU
+
+form 데이터처럼 이미지 업로처럼 필요한 경우들이 존재합니다. 기타 변수추가하고 다양한 응용은 나중에 다룹니다.
+
+```go
+package main
+
+import (
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+)
+
+func main() {
+	fmt.Println("요청처리 1장입니다.")
+
+	PerformPostFormRequest()
+}
+
+func PerformPostFormRequest() {
+	const MY_URL = "http://localhost:8000/postform"
+
+	data := url.Values{}
+	data.Add("firstName", "jake")
+	data.Add("lastName", "the dog")
+	data.Add("email", "jakethegod@go.dev")
+
+	response, err := http.PostForm(MY_URL, data)
+	if err != nil {
+		panic(err)
+	}
+
+	defer response.Body.Close()
+
+	content, _ := ioutil.ReadAll(response.Body)
+	fmt.Println(string(content))
+}
+```
+
+> {"email":"jakethegod@go.dev","firstName":"jake","lastName":"the dog"}
+
+form 응답은 그렇게 다르게 생기지 않았습니다.
+
+# How to create JSON data in golang
+
+https://www.youtube.com/watch?v=SZ5xZ9OTeEI
+
+이번에는 JSON을 다룹니다. JSON을 응답으로 받았지만 문자열로만 다루었습니다. JSON을 생성하고 처리하는 것을 아는 것은 상당히 중요합니다.
+
+struct도 다시 다루게 될 것입니다.
+
+```go
+package main
+
+import "fmt"
+
+type course struct {
+	Name     string
+	Price    int
+	Platform string
+	password string
+	Tags     []string
+}
+
+func main() {
+	fmt.Println("JSON입니다.")
+}
+```
+
+간편하게 struct를 생성합니다.
+
+```go
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+type course struct {
+	Name     string
+	Price    int
+	Platform string
+	password string
+	Tags     []string
+}
+
+func main() {
+	fmt.Println("JSON입니다.")
+	EncodeJson()
+}
+
+func EncodeJson() {
+	lcoCourses := []course{
+		{"ReactJS BootCamp", 299, "LearnCodeOnline.in", "asdf", []string{"web-dev", "js"}},
+		{"MERN BootCamp", 199, "LearnCodeOnline.in", "qwer", []string{"full-stack", "js"}},
+		{"Vue BootCamp", 299, "LearnCodeOnline.in", "zcvx", nil},
+	}
+
+	// json데이터로 패키징합니다.
+	// 첫번째 인자는 인터페이스입니다. struct의 파생된 단어입니다.
+	finalJson, err := json.Marshal(lcoCourses)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%s\n", finalJson)
+
+}
+```
+
+> [{"Name":"ReactJS BootCamp","Price":299,"Platform":"LearnCodeOnline.in","Tags":["web-dev","js"]},{"Name":"MERN BootCamp","Price":199,"Platform":"LearnCodeOnline.in","Tags":["full-stack","js"]},{"Name":"Vue BootCamp","Price":299,"Platform":"LearnCodeOnline.in","Tags":null}]
+
+데이터를 읽을 수 있습니다. `nil`은 `null`로 변환이 발생합니다.
+
+`finalJson, err := json.MarshalIndent(lcoCourses, "", "\t")`이렇게 설정하면 들여쓰기가 되서 가독성을 높일 수 있습니다. 하지만 일부 어퍼케이스로 변환이 발생합니다. 대부부의 경우 소문자로 시작하는 것을 권장합니다.
+
+```txt
+[
+        {
+                "Name": "ReactJS BootCamp",
+                "Price": 299,
+                "Platform": "LearnCodeOnline.in",
+                "Tags": [
+                        "web-dev",
+                        "js"
+                ]
+        },
+        {
+                "Name": "MERN BootCamp",
+                "Price": 199,
+                "Platform": "LearnCodeOnline.in",
+                "Tags": [
+                        "full-stack",
+                        "js"
+                ]
+        },
+        {
+                "Name": "Vue BootCamp",
+                "Price": 299,
+                "Platform": "LearnCodeOnline.in",
+                "Tags": null
+        }
+]
+```
+
+struct 엘리어스를 설정할 수 있지만 업데이트가 되었습니다. 이부분은 생략합니다.
+
+# How to consume JSON data in golang
+
+https://www.youtube.com/watch?v=a96veXdifys
+
+이번에는 JSON 데이터의 소비자가 됩니다. JSON을 디코딩합니다.
+
+문자열 형태가 아닌 일반적인 JSON으로 다루게 됩니다.
+
+```go
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+type course struct {
+	Name     string `json: "coursename"`
+	Price    int
+	Platform string   `json: "website"`
+	password string   `json: "-"` // 제거
+	Tags     []string `json: "tags, omitempty"`
+}
+
+func main() {
+	fmt.Println("JSON입니다.")
+	// EncodeJson()
+	DecodeJson()
+}
+
+func DecodeJson() {
+	jsonDataFromWeb := []byte(`
+	{
+		"Name": "ReactJS BootCamp",
+		"Price": 299,
+		"Platform": "LearnCodeOnline.in",
+		"Tags": [
+						"web-dev",
+						"js"
+		]
+}
+	`)
+
+	var lcoCourse course
+
+	checkValid := json.Valid(jsonDataFromWeb)
+	if checkValid {
+		fmt.Println("JSON은 검증되었습니다.")
+		// 두번째 인자에 참조할 주소를 전달합니다.
+		json.Unmarshal(jsonDataFromWeb, &lcoCourse)
+		fmt.Printf("%#v\n", lcoCourse)
+	} else {
+		fmt.Println("JSON은 유효하지 않습니다.")
+	}
+}
+```
+
+하지만 자주 사용하는 유스케이스들이 있습니다. 키와 값으로 자료를 추가하고 싶을 때가 있습니다.
+
+```go
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+type course struct {
+	Name     string `json: "coursename"`
+	Price    int
+	Platform string   `json: "website"`
+	password string   `json: "-"` // 제거
+	Tags     []string `json: "tags, omitempty"`
+}
+
+func main() {
+	fmt.Println("JSON입니다.")
+	// EncodeJson()
+	DecodeJson()
+}
+
+func DecodeJson() {
+	jsonDataFromWeb := []byte(`
+	{
+		"Name": "ReactJS BootCamp",
+		"Price": 299,
+		"Platform": "LearnCodeOnline.in",
+		"Tags": [
+						"web-dev",
+						"js"
+		]
+}
+	`)
+
+	var lcoCourse course
+
+	checkValid := json.Valid(jsonDataFromWeb)
+	if checkValid {
+		fmt.Println("JSON은 검증되었습니다.")
+		// 두번째 인자에 참조할 주소를 전달합니다.
+		json.Unmarshal(jsonDataFromWeb, &lcoCourse)
+		fmt.Printf("%#v\n", lcoCourse)
+	} else {
+		fmt.Println("JSON은 유효하지 않습니다.")
+	}
+
+	// 키와 값같은 해쉬테이블 자료형 응용
+	var myOnlineData map[string]interface{}
+	json.Unmarshal(jsonDataFromWeb, &myOnlineData)
+
+	fmt.Printf("%#v\n", myOnlineData)
+
+	for k, v := range myOnlineData {
+		fmt.Printf("Key is %v and value is %v and type is: %T\n", k, v, v)
+	}
+}
+```
+
+> Key is Name and value is ReactJS BootCamp and type is: string
+> Key is Price and value is 299 and type is: float64
+> Key is Platform and value is LearnCodeOnline.in and type is: string
+> Key is Tags and value is [web-dev js] and type is: []interface {}
+
+이렇게 터미널에 출력됩니다.
+
+바이트, struct, 해쉬테이블 등으로 응용하는 법을 배웠습니다.
